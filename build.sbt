@@ -1,0 +1,26 @@
+import AssemblyKeys._
+
+name := "HotelsBooking"
+scalaVersion := "2.11.7"
+version := "1.0.0"
+val sparkVersion = "2.4.7"
+
+libraryDependencies ++= Seq(
+  "org.scala-lang" % "scala-library" % scalaVersion.value,
+  "org.apache.spark" %% "spark-core" % sparkVersion,
+  "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion,
+  "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
+  "org.apache.spark" %% "spark-streaming" % sparkVersion % "compile",
+  "org.apache.spark" %% "spark-sql" % sparkVersion,
+  "org.apache.spark" %% "spark-avro" % sparkVersion,
+  "com.typesafe" % "config" % "1.3.1",
+  "org.json4s" %% "json4s-core" % "3.5.3",
+  "org.json4s" %% "json4s-jackson" % "3.5.3"
+)
+
+assemblySettings
+
+mergeStrategy in assembly := {
+  case PathList("org", "apache", "spark", "unused", "UnusedStubClass.class") => MergeStrategy.first
+  case x => (mergeStrategy in assembly).value(x)
+}
