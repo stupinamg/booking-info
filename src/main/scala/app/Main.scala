@@ -1,7 +1,8 @@
 package app
 
-import app.service.rdd.{DataMapperRdd, DataProcessorRdd}
-import app.service.df.{DataMapperDf, DataProcessorDf}
+import app.service.df.{DataMapperDF, DataProcessorDF}
+import app.service.ds.{DataMapperDS, DataProcessorDS}
+import app.service.rdd.{DataMapperRDD, DataProcessorRDD}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -18,24 +19,34 @@ object Main {
       .registerKryoClasses(Array(classOf[String]))
 
     val sc = new SparkContext(conf)
-    val dataProcessorRdd = new DataProcessorRdd()
-    val dataMapperRdd = new DataMapperRdd()
-    val dataMapperDf = new DataMapperDf()
-    val dataProcessorDf = new DataProcessorDf()
+    val dataMapperRDD = new DataMapperRDD()
+    val dataMapperDF = new DataMapperDF()
+    val dataMapperDS = new DataMapperDS()
 
-    // rdd option
-//    val hotelsRdd = dataMapperRdd.getDataFromKafka(sc, config)
-//    val expediaRdd = dataMapperRdd.getDataFromHdfs(config)
-//    val idleRdd = dataProcessorRdd.calculateIdleDays(expediaRdd)
-//    val data = dataProcessorRdd.validateHotelsData(idleRdd, hotelsRdd)
-//    dataProcessorRdd.storeValidExpediaData(data, config)
+    val dataProcessorRDD = new DataProcessorRDD()
+    val dataProcessorDF = new DataProcessorDF()
+    val dataProcessorDS = new DataProcessorDS()
 
-    // df option
-    val hotelsDf = dataMapperDf.getDataFromKafkaDf(config)
-    val expediaDf = dataMapperDf.getDataFromHdfsDf(config)
-    val idleDf = dataProcessorDf.calculateIdleDaysDf(expediaDf)
-    val data = dataProcessorDf.validateHotelsDataDf(idleDf, hotelsDf)
-    dataProcessorDf.storeValidExpediaData(data, config)
+    // RDD option
+    val hotelsRDD = dataMapperRDD.getDataFromKafka(sc, config)
+    val expediaRDD = dataMapperRDD.getDataFromHdfs(config)
+    val idleRDD = dataProcessorRDD.calculateIdleDays(expediaRDD)
+    val dataRDD = dataProcessorRDD.validateHotelsData(idleRDD, hotelsRDD)
+    dataProcessorRDD.storeValidExpediaData(dataRDD, config)
+
+    // DF option
+    val hotelsDF = dataMapperDF.getDataFromKafkaDf(config)
+    val expediaDF = dataMapperDF.getDataFromHdfsDf(config)
+    val idleDF = dataProcessorDF.calculateIdleDaysDf(expediaDF)
+    val dataDF = dataProcessorDF.validateHotelsDataDf(idleDF, hotelsDF)
+    dataProcessorDF.storeValidExpediaData(dataDF, config)
+
+    // Dataset option
+    //    val hotelsDS = dataMapperDS.getDataFromKafkaDs(config)
+    //    val expediaDS = dataMapperDS.getDataFromHdfsDs(config)
+    //    val idleDS = dataProcessorDS.calculateIdleDaysDf(expediaDS)
+    //    val dataDS = dataProcessorDS.validateHotelsDataDf(idleDS, hotelsDS)
+    //    dataProcessorDf.storeValidExpediaData(dataDS, config)
 
     sc.stop()
   }

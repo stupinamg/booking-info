@@ -1,9 +1,10 @@
 package app.entity
 
-class HotelInfo(val name: String,
-                val country: String,
-                val city: String,
-                val address: String,
-                val latitude: String,
-                val longitude: String,
-                val geohash: String) extends Serializable
+case class HotelInfo(id: Double,
+                     name: String,
+                     country: String,
+                     city: String,
+                     address: String,
+                     latitude: String,
+                     longitude: String,
+                     geohash: String) extends Serializable
