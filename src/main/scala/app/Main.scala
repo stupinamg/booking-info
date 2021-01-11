@@ -28,25 +28,25 @@ object Main {
     val dataProcessorDS = new DataProcessorDS()
 
     // RDD option
-    val hotelsRDD = dataMapperRDD.getDataFromKafka(sc, config)
-    val expediaRDD = dataMapperRDD.getDataFromHdfs(config)
-    val idleRDD = dataProcessorRDD.calculateIdleDays(expediaRDD)
-    val dataRDD = dataProcessorRDD.validateHotelsData(idleRDD, hotelsRDD)
-    dataProcessorRDD.storeValidExpediaData(dataRDD, config)
+//    val hotelsRDD = dataMapperRDD.getDataFromKafka(sc, config)
+//    val expediaRDD = dataMapperRDD.getDataFromHdfs(config)
+//    val idleRDD = dataProcessorRDD.calculateIdleDays(expediaRDD)
+//    val dataRDD = dataProcessorRDD.validateHotelsData(idleRDD, hotelsRDD)
+//    dataProcessorRDD.storeValidExpediaData(dataRDD, config)
 
     // DF option
-    val hotelsDF = dataMapperDF.getDataFromKafkaDf(config)
-    val expediaDF = dataMapperDF.getDataFromHdfsDf(config)
-    val idleDF = dataProcessorDF.calculateIdleDaysDf(expediaDF)
-    val dataDF = dataProcessorDF.validateHotelsDataDf(idleDF, hotelsDF)
-    dataProcessorDF.storeValidExpediaData(dataDF, config)
+//    val hotelsDF = dataMapperDF.getDataFromKafka(config)
+//    val expediaDF = dataMapperDF.getDataFromHdfs(config)
+//    val idleDF = dataProcessorDF.calculateIdleDays(expediaDF)
+//    val dataDF = dataProcessorDF.validateHotelsData(idleDF, hotelsDF)
+//    dataProcessorDF.storeValidExpediaData(dataDF, config)
 
     // Dataset option
-    //    val hotelsDS = dataMapperDS.getDataFromKafkaDs(config)
-    //    val expediaDS = dataMapperDS.getDataFromHdfsDs(config)
-    //    val idleDS = dataProcessorDS.calculateIdleDaysDf(expediaDS)
-    //    val dataDS = dataProcessorDS.validateHotelsDataDf(idleDS, hotelsDS)
-    //    dataProcessorDf.storeValidExpediaData(dataDS, config)
+        val hotelsDS = dataMapperDS.getDataFromKafka(config)
+        val expediaDS = dataMapperDS.getDataFromHdfs(config)
+        val idleDS = dataProcessorDS.calculateIdleDays(expediaDS)
+        val dataDS = dataProcessorDS.validateHotelsData(idleDS, hotelsDS)
+        dataProcessorDS.storeValidExpediaData(dataDS, config)
 
     sc.stop()
   }

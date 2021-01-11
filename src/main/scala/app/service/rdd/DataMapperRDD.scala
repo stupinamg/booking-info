@@ -42,9 +42,11 @@ class DataMapperRDD extends Serializable {
 
   def getDataFromHdfs(config: Config) = {
     val filePath = config.getString("hdfs.filePath")
-    val sparkSession = SparkSession.builder().appName("HotelsBooking").getOrCreate()
+    val spark = SparkSession.builder()
+      .appName("HotelsBooking")
+      .getOrCreate()
 
-    sparkSession.read
+    spark.read
       .format("avro")
       .load(filePath).rdd.map(row => {
       ExpediaData(row.getLong(0), row.getString(1), row.getInt(2), row.getInt(3),

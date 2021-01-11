@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 
 class DataProcessorDF {
 
-  def calculateIdleDaysDf(df: DataFrame) = {
+  def calculateIdleDays(df: DataFrame) = {
     val dtFunc = (arg1: String, arg2: String) => {
       val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
       val dateIn = LocalDate.parse(arg1, formatter)
@@ -23,7 +23,7 @@ class DataProcessorDF {
       dtFunc2(col("srch_ci"), col("srch_co")))
   }
 
-  def validateHotelsDataDf(expediaData: DataFrame, hotelsData: DataFrame) = {
+  def validateHotelsData(expediaData: DataFrame, hotelsData: DataFrame) = {
     val joinedData = hotelsData
       .join(expediaData, hotelsData.col("id") === expediaData.col("hotel_id"))
     val invalidData = joinedData.filter(expediaData("idleDays") >= 2 && expediaData("idleDays") < 30)

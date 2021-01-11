@@ -12,11 +12,11 @@ import java.time.temporal.ChronoUnit
 class DataProcessorRDD extends Serializable {
 
   def calculateIdleDays(rdd: RDD[ExpediaData]) = {
-    rdd.filter(row => row.srchCo != null)
+    rdd.filter(row => row.srch_co != null)
       .map(value => {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val dateIn = LocalDate.parse(value.srchCi, formatter)
-        val dateOut = LocalDate.parse(value.srchCo, formatter)
+        val dateIn = LocalDate.parse(value.srch_ci, formatter)
+        val dateOut = LocalDate.parse(value.srch_co, formatter)
         val idleDays = ChronoUnit.DAYS.between(dateIn, dateOut)
         (value, idleDays)
       })
@@ -41,11 +41,15 @@ class DataProcessorRDD extends Serializable {
 
   def storeValidExpediaData(rdd: RDD[(ExpediaData, Long)], config: Config) = {
     val hdfsPath = config.getString("hdfs.validDataPath")
-    val transformedRdd = rdd.map(f => (f._1.srchCi, f._1))
     val parentNumPartitions = rdd.partitions.length
+    val transformedRdd = rdd.map(f => {
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+      val year = LocalDate.parse(f._1.srch_ci, formatter).getYear
+      (year, f._1)
+    })
 
     transformedRdd
-      .partitionBy(new SrchCiPartitioner(parentNumPartitions)) //todo
+      .partitionBy(new SrchCiPartitioner(parentNumPartitions))
       .saveAsTextFile(hdfsPath)
   }
 }

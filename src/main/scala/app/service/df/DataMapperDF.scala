@@ -1,15 +1,15 @@
 package app.service.df
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.SparkSession
 
 class DataMapperDF {
 
-  def getDataFromKafkaDf(config: Config)= {
-    val spark = SparkSession.builder
-      .appName("HotelsBooking")
-      .getOrCreate()
+  val spark = SparkSession.builder
+    .appName("HotelsBooking")
+    .getOrCreate()
 
+  def getDataFromKafka(config: Config) = {
     import spark.implicits._
     val topic = config.getString("kafka.topics").split(",").toSet.head
     val starting = config.getString("kafka.startOffset")
@@ -25,14 +25,11 @@ class DataMapperDF {
       .option("failOnDataLoss", "false")
       .load()
       .selectExpr("CAST(value AS STRING) as string").as[String]
-   spark.read.json(inputDf)
+    spark.read.json(inputDf)
   }
 
-  def getDataFromHdfsDf(config: Config) = {
+  def getDataFromHdfs(config: Config) = {
     val filePath = config.getString("hdfs.filePath")
-    val spark = SparkSession.builder()
-      .appName("HotelsBooking")
-      .getOrCreate()
 
     spark.read
       .format("avro")

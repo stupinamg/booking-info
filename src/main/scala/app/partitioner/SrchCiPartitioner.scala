@@ -14,7 +14,7 @@ class SrchCiPartitioner(partitions: Int) extends Partitioner {
   override def getPartition(key: Any): Int = {
     val k = key.asInstanceOf[ExpediaData]
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val year = LocalDate.parse(k.srchCi, formatter).getYear
+    val year = LocalDate.parse(k.srch_ci, formatter).getYear
     nonNegativeMod(year.hashCode(), numPartitions)
   }
 
