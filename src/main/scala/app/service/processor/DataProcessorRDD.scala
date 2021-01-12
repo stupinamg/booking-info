@@ -9,8 +9,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+/** Processes data in RDD */
 class DataProcessorRDD extends Serializable {
 
+  /** Calculates dates between check-in and check-out
+   *
+   * @param rdd expedia data
+   * @return RDD of expedia data with idle days
+   */
   def calculateIdleDays(rdd: RDD[ExpediaData]) = {
     val dataWithIdleDays = rdd.filter(row => row.srch_co != null)
       .map(value => {
@@ -30,6 +36,12 @@ class DataProcessorRDD extends Serializable {
     })
   }
 
+  /** Validates booking data
+   *
+   * @param expediaData
+   * @param hotelsData
+   * @return RDD of valid booking data
+   */
   def validateHotelsData(expediaData: RDD[ValidExpediaData],
                          hotelsData: RDD[HotelInfo]) = {
     val invalidBookingData = expediaData.filter(row => row.idle_days >= 2 && row.idle_days < 30)
@@ -51,6 +63,11 @@ class DataProcessorRDD extends Serializable {
     validBookingData
   }
 
+  /** Stores valid expedia data to HDFS
+   *
+   * @param rdd    valid expedia data
+   * @param config configuration values for the HDFS
+   */
   def storeValidExpediaData(rdd: RDD[ValidExpediaData], config: Config) = {
     val hdfsPath = config.getString("hdfs.validDataPath")
 

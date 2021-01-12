@@ -1,5 +1,6 @@
 package app.entity
 
+/** Hotel data from Kafka */
 case class HotelInfo(id: Double,
                      name: String,
                      country: String,

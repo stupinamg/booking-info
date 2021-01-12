@@ -9,12 +9,18 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+/** Processes data in dataset */
 class DataProcessorDS {
 
   val spark = SparkSession.builder()
     .appName("HotelsBooking")
     .getOrCreate()
 
+  /** Calculates dates between check-in and check-out
+   *
+   * @param ds expedia data
+   * @return dataset of expedia data with idle days
+   */
   def calculateIdleDays(ds: Dataset[ExpediaData]) = {
     import spark.implicits._
 
@@ -35,6 +41,12 @@ class DataProcessorDS {
     })
   }
 
+  /** Validates booking data
+   *
+   * @param expediaData
+   * @param hotelsData
+   * @return dataset of valid booking data
+   */
   def validateHotelsData(expediaData: Dataset[ValidExpediaData],
                          hotelsData: Dataset[HotelInfo]) = {
     val invalidData = expediaData.filter(row => row.idle_days >= 2 && row.idle_days < 30)
@@ -55,6 +67,11 @@ class DataProcessorDS {
     validData
   }
 
+  /** Stores valid expedia data to HDFS
+   *
+   * @param ds     valid expedia data
+   * @param config configuration values for the HDFS
+   */
   def storeValidExpediaData(ds: Dataset[ValidExpediaData], config: Config) = {
     new DataProcessorDF().storeValidExpediaData(ds.toDF(), config)
   }

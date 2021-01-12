@@ -6,12 +6,18 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.DoubleType
 
+/** Dataset mapper for the data obtained from different sources */
 class DataMapperDS {
 
   val spark = SparkSession.builder
     .appName("HotelsBooking")
     .getOrCreate()
 
+  /** Reads data from Kafka
+   *
+   * @param config configuration values for the Kafka
+   * @return dataset of the hotels data
+   */
   def getDataFromKafka(config: Config) = {
     import spark.implicits._
     val inputDF = new DataMapperDF().getDataFromKafka(config)
@@ -24,6 +30,11 @@ class DataMapperDS {
     transformedInputDF.as[HotelInfo]
   }
 
+  /** Reads data from HDFS
+   *
+   * @param config configuration values for the HDFS
+   * @return dataset of the expedia data
+   */
   def getDataFromHdfs(config: Config) = {
     import spark.implicits._
 

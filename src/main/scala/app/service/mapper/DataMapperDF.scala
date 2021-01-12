@@ -3,12 +3,18 @@ package app.service.mapper
 import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession
 
+/** Dataframe mapper for the data obtained from different sources */
 class DataMapperDF {
 
   val spark = SparkSession.builder
     .appName("HotelsBooking")
     .getOrCreate()
 
+  /** Reads data from Kafka
+   *
+   * @param config configuration values for the Kafka
+   * @return dataframe of the hotels data
+   */
   def getDataFromKafka(config: Config) = {
     import spark.implicits._
     val topic = config.getString("kafka.topics").split(",").toSet.head
@@ -28,6 +34,11 @@ class DataMapperDF {
     spark.read.json(inputDf)
   }
 
+  /** Reads data from HDFS
+   *
+   * @param config configuration values for the HDFS
+   * @return dataframe of the expedia data
+   */
   def getDataFromHdfs(config: Config) = {
     val filePath = config.getString("hdfs.filePath")
 

@@ -1,5 +1,6 @@
 package app.entity
 
+/** Validated booking data got from HDFS */
 case class ValidExpediaData(id: Long,
                             date_time: String,
                             site_name: Int,
@@ -7,7 +8,8 @@ case class ValidExpediaData(id: Long,
                             user_location_country: Int,
                             user_location_region: Int,
                             user_location_city: Int,
-                            orig_destination_distance: Option[Double],
+                            orig_destination_distance: Option[Double],  // use for DS
+//                            orig_destination_distance: Double, // use for RDD
                             user_id: Int,
                             is_mobile: Int,
                             is_package: Int,

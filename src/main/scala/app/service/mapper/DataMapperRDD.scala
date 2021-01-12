@@ -12,8 +12,15 @@ import org.json4s.{DefaultFormats, JNull}
 
 import scala.collection.JavaConverters.mapAsJavaMapConverter
 
+/** RDD mapper for the data obtained from different sources */
 class DataMapperRDD extends Serializable {
 
+  /** Reads data from Kafka
+   *
+   * @param sc spark context
+   * @param config configuration values for the Kafka
+   * @return RDD of the hotels data
+   */
   def getDataFromKafka(sc: SparkContext, config: Config) = {
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> config.getString("kafka.broker"),
@@ -40,6 +47,11 @@ class DataMapperRDD extends Serializable {
     })
   }
 
+  /** Reads data from HDFS
+   *
+   * @param config configuration values for the HDFS
+   * @return RDD of the expedia data
+   */
   def getDataFromHdfs(config: Config) = {
     val filePath = config.getString("hdfs.filePath")
     val spark = SparkSession.builder()

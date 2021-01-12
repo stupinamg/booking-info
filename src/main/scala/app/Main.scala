@@ -5,6 +5,7 @@ import app.service.processor.{DataProcessorDF, DataProcessorDS, DataProcessorRDD
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 
+/** Application entry point */
 object Main {
 
   val config = ConfigFactory.load(s"resources/application.conf")
@@ -14,6 +15,7 @@ object Main {
       .setMaster("local[*]")
       .set("spark.streaming.kafka.consumer.cache.enabled", "false")
       .set("spark.streaming.kafka.consumer.poll.ms", "512")
+      .set("max.poll.interval.ms", "1000")
       .set("spark.serializer", "org.apache.spark.serializer.KryoSerialize")
       .registerKryoClasses(Array(classOf[String]))
 

@@ -8,8 +8,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+/** Processes data in dataframe */
 class DataProcessorDF {
 
+  /** Calculates dates between check-in and check-out
+   *
+   * @param df expedia data
+   * @return dataframe of expedia data with idle days
+   */
   def calculateIdleDays(df: DataFrame) = {
     val dtFunc = (arg1: String, arg2: String) => {
       val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -23,6 +29,12 @@ class DataProcessorDF {
       dtFunc2(col("srch_ci"), col("srch_co")))
   }
 
+  /** Validates booking data
+   *
+   * @param expediaData
+   * @param hotelsData
+   * @return dataframe of valid booking data
+   */
   def validateHotelsData(expediaData: DataFrame, hotelsData: DataFrame) = {
     val invalidData = expediaData.filter(expediaData("idleDays") >= 2 && expediaData("idleDays") < 30)
     invalidData.take(5).foreach(f => println("Booking data with invalid rows: " + f))
@@ -42,6 +54,11 @@ class DataProcessorDF {
     validData
   }
 
+  /** Stores valid expedia data to HDFS
+   *
+   * @param df     valid expedia data
+   * @param config configuration values for the HDFS
+   */
   def storeValidExpediaData(df: DataFrame, config: Config) = {
     val hdfsPath = config.getString("hdfs.validDataPath")
 
