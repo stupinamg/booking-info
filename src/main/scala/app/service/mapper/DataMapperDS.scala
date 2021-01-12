@@ -1,7 +1,6 @@
-package app.service.ds
+package app.service.mapper
 
 import app.entity.{ExpediaData, HotelInfo}
-import app.service.df.DataMapperDF
 import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.col

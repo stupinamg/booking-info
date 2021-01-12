@@ -1,8 +1,8 @@
-package app.service.df
+package app.service.processor
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, SaveMode}
 import org.apache.spark.sql.functions.{col, date_format, udf}
+import org.apache.spark.sql.{DataFrame, SaveMode}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -24,21 +24,22 @@ class DataProcessorDF {
   }
 
   def validateHotelsData(expediaData: DataFrame, hotelsData: DataFrame) = {
-    val joinedData = hotelsData
-      .join(expediaData, hotelsData.col("id") === expediaData.col("hotel_id"))
-    val invalidData = joinedData.filter(expediaData("idleDays") >= 2 && expediaData("idleDays") < 30)
+    val invalidData = expediaData.filter(expediaData("idleDays") >= 2 && expediaData("idleDays") < 30)
     invalidData.take(5).foreach(f => println("Booking data with invalid rows: " + f))
 
-    val validData = joinedData.except(invalidData)
+    val joinedInvalidData = hotelsData
+      .join(invalidData, hotelsData.col("id") === invalidData.col("hotel_id"))
+    joinedInvalidData.take(5).foreach(f => println("Hotel data for invalid rows: " + f))
 
-    val groupedByCountry = validData.groupBy(col("Country")).count()
+    val validData = expediaData.except(invalidData).toDF()
+    val joinedValidData = validData
+      .join(hotelsData, validData.col("hotel_id") === hotelsData.col("id"))
+
+    val groupedByCountry = joinedValidData.groupBy(col("Country")).count()
     groupedByCountry.take(5).foreach(f => println("Grouped by hotel county: " + f))
-
-    val groupedByCity = validData.groupBy(col("City")).count()
+    val groupedByCity = joinedValidData.groupBy(col("City")).count()
     groupedByCity.take(5).foreach(f => println("Grouped by hotel city: " + f))
-
-    expediaData.except(expediaData.filter(expediaData("idleDays") >= 2
-      && expediaData("idleDays") < 30)).toDF()
+    validData
   }
 
   def storeValidExpediaData(df: DataFrame, config: Config) = {

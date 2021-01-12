@@ -1,4 +1,4 @@
-package app.service.df
+package app.service.mapper
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession

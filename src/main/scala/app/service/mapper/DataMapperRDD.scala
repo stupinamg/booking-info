@@ -1,4 +1,4 @@
-package app.service.rdd
+package app.service.mapper
 
 import app.entity.{ExpediaData, HotelInfo}
 import com.typesafe.config.Config

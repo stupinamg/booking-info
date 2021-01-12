@@ -1,7 +1,6 @@
-package app.service.ds
+package app.service.processor
 
 import app.entity.{ExpediaData, HotelInfo, ValidExpediaData}
-import app.service.df.DataProcessorDF
 import com.typesafe.config.Config
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -53,7 +52,6 @@ class DataProcessorDS {
     groupedByCountry.take(5).foreach(f => println("Grouped by hotel county: " + f))
     val groupedByCity = joinedValidData.groupBy(col("City")).count()
     groupedByCity.take(5).foreach(f => println("Grouped by hotel city: " + f))
-
     validData
   }
 
