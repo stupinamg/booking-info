@@ -1,7 +1,7 @@
 package app.service.processor
 
 import app.entity.{ExpediaData, HotelInfo, ValidExpediaData}
-import app.partitioner.SrchCiPartitioner
+import app.partitioner.YearPartitioner
 import com.typesafe.config.Config
 import org.apache.spark.rdd.RDD
 
@@ -53,15 +53,16 @@ class DataProcessorRDD extends Serializable {
 
   def storeValidExpediaData(rdd: RDD[ValidExpediaData], config: Config) = {
     val hdfsPath = config.getString("hdfs.validDataPath")
-    val parentNumPartitions = rdd.partitions.length
-    val transformedRdd = rdd.map(f => {
+
+    val pairedRDD = rdd.map(f => {
       val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
       val year = LocalDate.parse(f.srch_ci, formatter).getYear
       (year, f)
     })
+    val numPartitions = pairedRDD.groupByKey().count().toInt
 
-    transformedRdd
-      .partitionBy(new SrchCiPartitioner(parentNumPartitions))
+    pairedRDD
+      .partitionBy(new YearPartitioner(numPartitions))
       .saveAsTextFile(hdfsPath)
   }
 }
