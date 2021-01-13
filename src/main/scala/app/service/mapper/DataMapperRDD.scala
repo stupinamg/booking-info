@@ -4,7 +4,7 @@ import app.entity.{ExpediaData, HotelInfo}
 import com.typesafe.config.Config
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Encoders, SparkSession}
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010.{KafkaUtils, OffsetRange}
 import org.json4s.jackson.JsonMethods.parse
@@ -17,7 +17,7 @@ class DataMapperRDD extends Serializable {
 
   /** Reads data from Kafka
    *
-   * @param sc spark context
+   * @param sc     spark context
    * @param config configuration values for the Kafka
    * @return RDD of the hotels data
    */
@@ -58,13 +58,13 @@ class DataMapperRDD extends Serializable {
       .appName("HotelsBooking")
       .getOrCreate()
 
+    import spark.implicits._
+    val schema = Encoders.product[ExpediaData].schema
+
     spark.read
       .format("avro")
-      .load(filePath).rdd.map(row => {
-      ExpediaData(row.getLong(0), row.getString(1), row.getInt(2), row.getInt(3),
-        row.getInt(4), row.getInt(5), row.getInt(6), row.getAs(7), row.getInt(8), row.getInt(9), row.getInt(10),
-        row.getInt(11), row.getString(12), row.getString(13), row.getInt(14), row.getInt(15),
-        row.getInt(16), row.getInt(17), row.getInt(18), row.getLong(19).toDouble)
-    })
+      .schema(schema)
+      .load(filePath)
+      .as[ExpediaData].rdd
   }
 }

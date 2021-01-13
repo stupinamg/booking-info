@@ -1,15 +1,14 @@
 package app.service.processor
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.functions.{col, date_format, udf}
+import org.apache.spark.sql.functions.{col, date_format, datediff}
 import org.apache.spark.sql.{DataFrame, SaveMode}
-
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 /** Processes data in dataframe */
 class DataProcessorDF {
+
+  val MIN_DAYS = 2
+  val MAX_DAYS = 30
 
   /** Calculates dates between check-in and check-out
    *
@@ -17,16 +16,8 @@ class DataProcessorDF {
    * @return dataframe of expedia data with idle days
    */
   def calculateIdleDays(df: DataFrame) = {
-    val dtFunc = (arg1: String, arg2: String) => {
-      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-      val dateIn = LocalDate.parse(arg1, formatter)
-      val dateOut = LocalDate.parse(arg2, formatter)
-      ChronoUnit.DAYS.between(dateIn, dateOut)
-    }
-    val dtFunc2 = udf(dtFunc)
-
-    df.filter(df("srch_co").isNotNull).withColumn("idleDays",
-      dtFunc2(col("srch_ci"), col("srch_co")))
+    df.filter(df("srch_co").isNotNull).withColumn("idle_days",
+      datediff(col("srch_co"), col("srch_ci")))
   }
 
   /** Validates booking data
@@ -36,21 +27,27 @@ class DataProcessorDF {
    * @return dataframe of valid booking data
    */
   def validateHotelsData(expediaData: DataFrame, hotelsData: DataFrame) = {
-    val invalidData = expediaData.filter(expediaData("idleDays") >= 2 && expediaData("idleDays") < 30)
-    invalidData.take(5).foreach(f => println("Booking data with invalid rows: " + f))
+    val invalidData = expediaData.filter(expediaData("idle_days") >= MIN_DAYS
+      && expediaData("idle_days") < MAX_DAYS)
 
-    val joinedInvalidData = hotelsData
+    // show info for invalid rows
+    hotelsData
       .join(invalidData, hotelsData.col("id") === invalidData.col("hotel_id"))
-    joinedInvalidData.take(5).foreach(f => println("Hotel data for invalid rows: " + f))
+      .show(50)
 
     val validData = expediaData.except(invalidData).toDF()
     val joinedValidData = validData
       .join(hotelsData, validData.col("hotel_id") === hotelsData.col("id"))
 
-    val groupedByCountry = joinedValidData.groupBy(col("Country")).count()
-    groupedByCountry.take(5).foreach(f => println("Grouped by hotel county: " + f))
-    val groupedByCity = joinedValidData.groupBy(col("City")).count()
-    groupedByCity.take(5).foreach(f => println("Grouped by hotel city: " + f))
+    //booking data grouped by country
+    joinedValidData.groupBy(col("Country"))
+      .count()
+      .show(50)
+
+    //booking data grouped by city
+    joinedValidData.groupBy(col("City"))
+      .count()
+      .show(50)
     validData
   }
 

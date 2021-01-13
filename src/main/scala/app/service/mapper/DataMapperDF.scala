@@ -17,17 +17,14 @@ class DataMapperDF {
    */
   def getDataFromKafka(config: Config) = {
     import spark.implicits._
-    val topic = config.getString("kafka.topics").split(",").toSet.head
-    val starting = config.getString("kafka.startOffset")
-    val ending = config.getString("kafka.endOffset")
 
     val inputDf = spark
       .read
       .format("kafka")
       .option("kafka.bootstrap.servers", config.getString("kafka.broker"))
-      .option("subscribe", topic)
-      .option("startingOffsets", starting)
-      .option("endingOffsets", ending)
+      .option("subscribe", config.getString("kafka.topics").split(",").toSet.head)
+      .option("startingOffsets", config.getString("kafka.startOffset"))
+      .option("endingOffsets", config.getString("kafka.endOffset"))
       .option("failOnDataLoss", "false")
       .load()
       .selectExpr("CAST(value AS STRING) as string").as[String]

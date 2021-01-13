@@ -8,8 +8,7 @@ case class ExpediaData(id: Long,
                        user_location_country: Int,
                        user_location_region: Int,
                        user_location_city: Int,
-                       orig_destination_distance: Option[Double], // use for DS
-//                       orig_destination_distance: Double, // use for RDD
+                       orig_destination_distance: Option[Double],
                        user_id: Int,
                        is_mobile: Int,
                        is_package: Int,
@@ -21,5 +20,5 @@ case class ExpediaData(id: Long,
                        srch_rm_cnt: Int,
                        srch_destination_id: Int,
                        srch_destination_type_id: Int,
-                       hotel_id: Double) extends Serializable
+                       hotel_id: Long) extends Serializable
 

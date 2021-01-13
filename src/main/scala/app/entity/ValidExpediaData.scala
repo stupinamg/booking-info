@@ -8,8 +8,7 @@ case class ValidExpediaData(id: Long,
                             user_location_country: Int,
                             user_location_region: Int,
                             user_location_city: Int,
-                            orig_destination_distance: Option[Double],  // use for DS
-//                            orig_destination_distance: Double, // use for RDD
+                            orig_destination_distance: Double,
                             user_id: Int,
                             is_mobile: Int,
                             is_package: Int,

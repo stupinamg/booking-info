@@ -2,9 +2,9 @@ package app.service.mapper
 
 import app.entity.{ExpediaData, HotelInfo}
 import com.typesafe.config.Config
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.DoubleType
+import org.apache.spark.sql.{Encoders, SparkSession}
 
 /** Dataset mapper for the data obtained from different sources */
 class DataMapperDS {
@@ -37,11 +37,12 @@ class DataMapperDS {
    */
   def getDataFromHdfs(config: Config) = {
     import spark.implicits._
-
+    val schema = Encoders.product[ExpediaData].schema
     val filePath = config.getString("hdfs.filePath")
+
     spark.read
       .format("avro")
-      .option("inferSchema", "true")
+      .schema(schema)
       .load(filePath)
       .as[ExpediaData]
   }

@@ -12,28 +12,29 @@ import java.time.temporal.ChronoUnit
 /** Processes data in RDD */
 class DataProcessorRDD extends Serializable {
 
+  val MIN_DAYS = 2
+  val MAX_DAYS = 30
+
   /** Calculates dates between check-in and check-out
    *
    * @param rdd expedia data
    * @return RDD of expedia data with idle days
    */
   def calculateIdleDays(rdd: RDD[ExpediaData]) = {
-    val dataWithIdleDays = rdd.filter(row => row.srch_co != null)
-      .map(value => {
+    rdd.filter(row => row.srch_co != null)
+      .map(row => {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val dateIn = LocalDate.parse(value.srch_ci, formatter)
-        val dateOut = LocalDate.parse(value.srch_co, formatter)
+        val dateIn = LocalDate.parse(row.srch_ci, formatter)
+        val dateOut = LocalDate.parse(row.srch_co, formatter)
         val idleDays = ChronoUnit.DAYS.between(dateIn, dateOut)
-        (value, idleDays)
-      })
 
-    dataWithIdleDays.map(row => {
-      ValidExpediaData(row._1.id, row._1.date_time, row._1.site_name, row._1.posa_continent,
-        row._1.user_location_country, row._1.user_location_region, row._1.user_location_city,
-        row._1.orig_destination_distance, row._1.user_id, row._1.is_mobile, row._1.is_package, row._1.channel,
-        row._1.srch_ci, row._1.srch_co, row._1.srch_adults_cnt, row._1.srch_children_cnt, row._1.srch_rm_cnt,
-        row._1.srch_destination_id, row._1.srch_destination_type_id, row._1.hotel_id, row._2)
-    })
+        ValidExpediaData(row.id, row.date_time, row.site_name, row.posa_continent,
+          row.user_location_country, row.user_location_region, row.user_location_city,
+          row.orig_destination_distance.getOrElse(0), row.user_id, row.is_mobile,
+          row.is_package, row.channel, row.srch_ci, row.srch_co, row.srch_adults_cnt,
+          row.srch_children_cnt, row.srch_rm_cnt, row.srch_destination_id,
+          row.srch_destination_type_id, row.hotel_id.toDouble, idleDays)
+      })
   }
 
   /** Validates booking data
@@ -44,22 +45,30 @@ class DataProcessorRDD extends Serializable {
    */
   def validateHotelsData(expediaData: RDD[ValidExpediaData],
                          hotelsData: RDD[HotelInfo]) = {
-    val invalidBookingData = expediaData.filter(row => row.idle_days >= 2 && row.idle_days < 30)
-    invalidBookingData.take(5).foreach(f => println("Booking data with invalid rows: " + f))
+    val invalidBookingData = expediaData.filter(row => row.idle_days >= MIN_DAYS
+      && row.idle_days < MAX_DAYS)
 
     val preparedExpediaData = expediaData.map(value => (value.hotel_id, value))
     val preparedHotelsData = hotelsData.map(value => (value.id, value))
     val joinedInvalidData = preparedHotelsData.join(preparedExpediaData)
-    joinedInvalidData.take(5).foreach(f => println("Hotel data for invalid rows: " + f))
+    // print info for invalid rows
+    joinedInvalidData.take(50).foreach(f => println("Booking data for invalid rows: " +
+      "hotel_id: " + f._2._1.id +
+      "hotel_name: " + f._2._1.name +
+      "hotel_country: " + f._2._1.country +
+      "hotel_city: " + f._2._1.city +
+      "invalid_idle_days: " + f._2._2.idle_days))
 
     val validBookingData = expediaData.subtract(invalidBookingData)
     val joinedValidData = validBookingData.map(value => (value.hotel_id, value)).join(preparedHotelsData)
 
+    //booking data grouped by country
     val groupedByCountry = joinedValidData.groupBy(_._2._2.country)
-    groupedByCountry.take(5).foreach(f => println("Grouped by hotel county: " + f))
+    groupedByCountry.take(50).foreach(f => println("Grouped hotel info by country: " + f))
 
+    //booking data grouped by city
     val groupedByCity = joinedValidData.groupBy(_._2._2.city)
-    groupedByCity.take(5).foreach(f => println("Grouped by hotel city: " + f))
+    groupedByCity.take(50).foreach(f => println("Grouped hotel info by city: " + f))
     validBookingData
   }
 
