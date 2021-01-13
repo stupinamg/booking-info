@@ -15,7 +15,10 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-avro" % sparkVersion,
   "com.typesafe" % "config" % "1.3.1",
   "org.json4s" %% "json4s-core" % "3.5.3",
-  "org.json4s" %% "json4s-jackson" % "3.5.3"
+  "org.json4s" %% "json4s-jackson" % "3.5.3",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.scalamock" %% "scalamock" % "4.1.0" % "test",
+  "net.manub" %% "scalatest-embedded-kafka" % "2.0.0" % Test
 )
 
 assemblySettings
