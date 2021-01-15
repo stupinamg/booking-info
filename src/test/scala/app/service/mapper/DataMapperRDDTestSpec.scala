@@ -47,7 +47,7 @@ class DataMapperRDDTestSpec extends FlatSpec with Matchers
 
   it should "read data from HDFS" in {
     val data = consumer.getDataFromHdfs(testConfig)
-    assert(data.count() == 101120)
+    assert(data.count() == 1)
   }
 
 }
