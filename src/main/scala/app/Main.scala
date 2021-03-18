@@ -17,6 +17,7 @@ object Main {
       .set("spark.streaming.kafka.consumer.poll.ms", "512")
       .set("max.poll.interval.ms", "1000")
       .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+      .set("spark.driver.allowMultipleContexts", "true")
       .registerKryoClasses(Array(classOf[String]))
 
     val sc = new SparkContext(conf)
