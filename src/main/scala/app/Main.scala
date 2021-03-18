@@ -16,7 +16,7 @@ object Main {
       .set("spark.streaming.kafka.consumer.cache.enabled", "false")
       .set("spark.streaming.kafka.consumer.poll.ms", "512")
       .set("max.poll.interval.ms", "1000")
-      .set("spark.serializer", "org.apache.spark.serializer.KryoSerialize")
+      .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
       .registerKryoClasses(Array(classOf[String]))
 
     val sc = new SparkContext(conf)
