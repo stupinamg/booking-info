@@ -53,7 +53,7 @@ class DataMapperRDD extends Serializable {
    * @return RDD of the expedia data
    */
   def getDataFromHdfs(config: Config) = {
-    val filePath = config.getString("hdfs.filePath")
+    val filePath = "src/test/scala/resources/part-00000-expedia-data.avro"
     val spark = SparkSession.builder()
       .appName("HotelsBooking")
       .getOrCreate()

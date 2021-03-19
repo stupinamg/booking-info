@@ -57,7 +57,7 @@ class DataProcessorDF {
    * @param config configuration values for the HDFS
    */
   def storeValidExpediaData(df: DataFrame, config: Config) = {
-    val hdfsPath = config.getString("hdfs.validDataPath")
+    val hdfsPath = "src/test/scala/resources/valid-expedia-data"
 
     df.withColumn("year", date_format(col("srch_ci"), "yyyy"))
       .write
