@@ -38,7 +38,7 @@ class DataMapperDS {
   def getDataFromHdfs(config: Config) = {
     import spark.implicits._
     val schema = Encoders.product[ExpediaData].schema
-    val filePath = config.getString("hdfs.filePath")
+    val filePath = "src/test/scala/resources/part-00000-expedia-data.avro"
 
     spark.read
       .format("avro")

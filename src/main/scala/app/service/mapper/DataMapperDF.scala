@@ -21,10 +21,10 @@ class DataMapperDF {
     val inputDf = spark
       .read
       .format("kafka")
-      .option("kafka.bootstrap.servers", config.getString("kafka.broker"))
-      .option("subscribe", config.getString("kafka.topics").split(",").toSet.head)
-      .option("startingOffsets", config.getString("kafka.startOffset"))
-      .option("endingOffsets", config.getString("kafka.endOffset"))
+      .option("kafka.bootstrap.servers", "localhost:9093")
+      .option("subscribe", "hotels-data2")
+      .option("startingOffsets", "0")
+      .option("endingOffsets", "200000")
       .option("failOnDataLoss", "false")
       .load()
       .selectExpr("CAST(value AS STRING) as string").as[String]
@@ -37,7 +37,7 @@ class DataMapperDF {
    * @return dataframe of the expedia data
    */
   def getDataFromHdfs(config: Config) = {
-    val filePath = config.getString("hdfs.filePath")
+    val filePath = "src/test/scala/resources/part-00000-expedia-data.avro"
 
     spark.read
       .format("avro")

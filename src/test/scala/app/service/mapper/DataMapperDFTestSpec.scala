@@ -16,10 +16,10 @@ class DataMapperDFTestSpec extends FlatSpec with Matchers
 
   "Config for Kafka" should "be read successfully" in {
     val confPath = s"resources/testApplication.conf"
-    val kafkaTopic = testConfig.getString("kafka.topics")
-    val kafkaBroker = testConfig.getString("kafka.broker")
-    val kafkaStartOffset = testConfig.getString("kafka.startOffset")
-    val kafkaEndOffset = testConfig.getString("kafka.endOffset")
+    val kafkaTopic = "hotels-data2"
+    val kafkaBroker = "localhost:9093"
+    val kafkaStartOffset = """{"hotels-data2":{"0":-2}}"""
+    val kafkaEndOffset = """{"hotels-data2":{"0":-1}}"""
 
     assert(kafkaTopic == "hotels-data2")
     assert(kafkaBroker == "localhost:9093")
