@@ -10,11 +10,6 @@ trait SparkSessionTestWrapper {
       .appName("Spark Test")
       .getOrCreate()
   }
-//  val conf = new SparkConf()
-//    .setMaster("local[*]")
-//    .setAppName("Spark Test")
-//
-//  val sparkContext = new SparkContext(conf)
 
   val sparkContext = spark.sparkContext
 }
