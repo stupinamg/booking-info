@@ -14,18 +14,18 @@ class DataMapperDFTestSpec extends FlatSpec with Matchers
   implicit val config = EmbeddedKafkaConfig(kafkaPort = 9093, zooKeeperPort = 2182)
   implicit val testConfig = ConfigFactory.load(s"resources/testApplication.conf")
 
-//  "Config for Kafka" should "be read successfully" in {
-//    val confPath = s"resources/testApplication.conf"
-//    val kafkaTopic = ConfigFactory.load(confPath).getConfig("kafka").getString("topics")
-//    val kafkaBroker = ConfigFactory.load(confPath).getConfig("kafka").getString("broker")
-//    val kafkaStartOffset = ConfigFactory.load(confPath).getConfig("kafka").getString("startOffset")
-//    val kafkaEndOffset = ConfigFactory.load(confPath).getConfig("kafka").getString("endOffset")
-//
-//    assert(kafkaTopic == "hotels-data2")
-//    assert(kafkaBroker == "localhost:9093")
-//    assert(kafkaStartOffset == """{"hotels-data2":{"0":-2}}""")
-//    assert(kafkaEndOffset == """{"hotels-data2":{"0":-1}}""")
-//  }
+  "Config for Kafka" should "be read successfully" in {
+    val confPath = s"resources/testApplication.conf"
+    val kafkaTopic = ConfigFactory.load(confPath).getConfig("kafka").getString("topics")
+    val kafkaBroker = ConfigFactory.load(confPath).getConfig("kafka").getString("broker")
+    val kafkaStartOffset = ConfigFactory.load(confPath).getConfig("kafka").getString("startOffset")
+    val kafkaEndOffset = ConfigFactory.load(confPath).getConfig("kafka").getString("endOffset")
+
+    assert(kafkaTopic == "hotels-data2")
+    assert(kafkaBroker == "localhost:9093")
+    assert(kafkaStartOffset == """{"hotels-data2":{"0":-2}}""")
+    assert(kafkaEndOffset == """{"hotels-data2":{"0":-1}}""")
+  }
 
   it should "consume message from published topic" in {
     EmbeddedKafka.start()
