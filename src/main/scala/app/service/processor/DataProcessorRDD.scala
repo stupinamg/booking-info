@@ -78,7 +78,7 @@ class DataProcessorRDD extends Serializable {
    * @param config configuration values for the HDFS
    */
   def storeValidExpediaData(rdd: RDD[ValidExpediaData], config: Config) = {
-    val hdfsPath = config.getString("hdfs.validDataPath")
+    val hdfsPath = "src/test/scala/resources/valid-expedia-data"
 
     val pairedRDD = rdd.map(f => {
       val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
