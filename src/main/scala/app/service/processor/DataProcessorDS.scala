@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 /** Processes data in dataset */
-class DataProcessorDS {
+class DataProcessorDS extends Serializable {
 
   val spark = SparkSession.builder()
     .appName("HotelsBooking")
